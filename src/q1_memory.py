@@ -5,23 +5,46 @@ from memory_profiler import profile
 from pyspark.sql.types import DateType
 from pyspark.sql import functions as sf 
 
+# funcion para extraer los detalles de los tweets
+def extract_details(df, quotedTweetLevel):
+    return df.select(
+        sf.col(f"{quotedTweetLevel}.id").alias("id"),
+        sf.col(f"{quotedTweetLevel}.date").alias("date"),
+        sf.col(f"{quotedTweetLevel}.user.username").alias("username")
+    ).where(sf.col(f"{quotedTweetLevel}.id").isNotNull())
+
+# funcion para extraer todos los tweets de los niveles nesteados
+# de quotedTweet
+def extract_all_tweets(json_data):
+    # selecciono las columnas que me interesan para este análisis
+    df = json_data.select("id", "date", sf.col("user.username").alias("username"))
+    # como existen varios niveles de quotedTweet, se debe iterar para obtener todos los tweets
+    current_level = 1
+    while True:
+        quoted_tweet_col = "quotedTweet" + ".quotedTweet" * (current_level - 1)
+        next_level_col = quoted_tweet_col + ".quotedTweet"
+        # checkeo si existe el siguiente nivel
+        json_data = json_data.withColumn("has_next_level", sf.col(next_level_col).isNotNull())
+        # si no existe el siguiente nivel, termino la iteración
+        if json_data.filter(sf.col("has_next_level")).count() == 0:
+            break
+        # uso la función para extraer los detalles de los tweets
+        ndf = extract_details(json_data, quoted_tweet_col)
+        # uno al df principal
+        df = df.union(ndf).distinct()
+        current_level += 1
+    
+    return df
+
+
 @profile
 def q1_memory(file_path: str) -> List[Tuple[datetime.date, str]]:
     # Inicializacion de Spark
     spark = SparkClass("Q1: Memory")
     # Carga de datos
     json_data = spark.load_json(file_path)
-
-    # TODO: ARREGLAR ESTO
-    quoted1 = json_data.select("quotedTweet.*")
-    quoted2 = quoted1.select("quotedTweet.*")
-    quoted3 = quoted2.select("quotedTweet.*").select("date", "id", "user.username")
-
-    df = json_data.select("date", "id", "user.username") \
-        .union(quoted1.select("date", "id", "user.username")) \
-        .union(quoted2.select("date", "id", "user.username")) \
-        .union(quoted3.select("date", "id", "username")) \
-        .distinct()
+    
+    df = extract_all_tweets(json_data)
 
     # obtengo las top 10 fechas con mas tweets
     top_10_dates = df.groupBy(df["date"].cast(DateType()).alias("date")) \
