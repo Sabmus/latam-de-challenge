@@ -2,8 +2,8 @@ from pyspark.sql import SparkSession
 from pyspark.conf import SparkConf
 
 master: str = "local[*]"
-max_cores: int = 8
-memory: str = "8g"
+max_cores: int = 1
+memory: str = "2g"
 max_partition_bytes: int = 128 * 1024 * 1024 # 128MB
 
 class SparkClass:
