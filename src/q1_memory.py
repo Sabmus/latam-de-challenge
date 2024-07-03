@@ -2,6 +2,8 @@ from typing import List, Tuple
 from datetime import datetime
 from spark_class import SparkClass
 from memory_profiler import profile
+from pyspark.sql.types import DateType
+from pyspark.sql.functions import desc, count
 
 @profile
 def q1_memory(file_path: str) -> List[Tuple[datetime.date, str]]:
@@ -9,8 +11,34 @@ def q1_memory(file_path: str) -> List[Tuple[datetime.date, str]]:
     spark = SparkClass("Q1: Memory")
     # Carga de datos
     json_data = spark.load_json(file_path)
+    quoted1 = json_data.select("quotedTweet.*")
+    quoted2 = quoted1.select("quotedTweet.*")
+    quoted3 = quoted2.select("quotedTweet.*").select("date", "id", "user.username")
 
+    # TODO: ARREGLAR ESTO
+    df = json_data.select("date", "id", "user.username") \
+        .union(quoted1.select("date", "id", "user.username")) \
+        .union(quoted2.select("date", "id", "user.username")) \
+        .union(quoted3.select("date", "id", "username")) \
+        .distinct()
+
+    # obtengo las top 10 fechas con mas tweets
+    top_10_dates = df.groupBy(df["date"].cast(DateType()).alias("date")) \
+        .agg(count("id").alias("tweetCount")) \
+        .orderBy(desc("tweetCount")) \
+        .limit(10)
     
+    # filtro el df principal con las top 10 fechas para luego agrupar según cantidad de tweets por usuario
+    top_user_by_date = df.filter(df.date.cast(DateType()).isin([row.date for row in top_10_dates.collect()])) \
+        .groupBy(df["date"].cast(DateType()).alias("date"), "username") \
+        .agg(count("id").alias("tweetCount")).orderBy(desc("tweetCount")) \
+        .limit(10)
+    
+    # hago un join con ambos df para obtener el resultado final
+    result = top_10_dates.join(top_user_by_date, 
+               top_10_dates.date == top_user_by_date.date, 
+               "inner").select(top_10_dates.date, top_user_by_date.username).orderBy(desc(top_10_dates.tweetCount)).collect()
+
     # termino ejecucion de spark
     spark.stop()
-    return []
+    return [(row.date, row.username) for row in result]
