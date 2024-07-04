@@ -9,7 +9,7 @@ def extract_details(df, quotedTweetLevel):
 # funcion para extraer todos los tweets de los niveles nesteados
 # de quotedTweet
 def extract_all_tweets(json_data):
-    df = json_data.alias("df")
+    df = json_data.alias("df").drop("quotedTweet")
     # como existen varios niveles de quotedTweet, se debe iterar para obtener todos los tweets
     current_level = 1
     while True:
@@ -24,7 +24,7 @@ def extract_all_tweets(json_data):
         ndf = extract_details(json_data, quoted_tweet_col)
 
         # uno al df principal
-        df = df.drop("quotedTweet").union(ndf.drop("quotedTweet")).distinct()
+        df = df.union(ndf.drop("quotedTweet")).dropDuplicates(["id"])
         current_level += 1
     
     return df
