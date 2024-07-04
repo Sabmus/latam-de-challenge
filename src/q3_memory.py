@@ -7,7 +7,6 @@ from pyspark.sql import functions as sf
 # funcion para extraer los detalles de los tweets
 def extract_details(df, quotedTweetLevel):
     return df.select(
-        #sf.col(f"{quotedTweetLevel}.user.username").alias("username"),
         sf.col(f"{quotedTweetLevel}.mentionedUsers").alias("mentionedUsers"),
     ).where(sf.col(f"{quotedTweetLevel}.id").isNotNull())
 
@@ -34,24 +33,24 @@ def extract_all_tweets(json_data):
     
     return df
 
-#@profile
+@profile
 def q3_memory(file_path: str) -> List[Tuple[str, int]]:
     # Inicializacion de Spark
     spark = SparkClass("Q1: Memory")
     # Carga de datos
     json_data = spark.load_json(file_path)
     df = extract_all_tweets(json_data)
-    df = df.select(sf.explode("mentionedUsers").alias("username"))
-    print(df.printSchema())
+    # hago un explode de los mentionedUsers para abrir el array y luego tomo solo el nombre de usuario
+    df = df.select(sf.explode("mentionedUsers").alias("mentionedUsers")).select("mentionedUsers.username")
 
     # obtengo las top 10 fechas con mas tweets
     top_10_users = df.groupBy("username") \
         .agg(sf.count("username").alias("mentionCount")) \
-        .orderBy(sf.desc("mentionCount")).limit(10)
+        .orderBy(sf.desc("mentionCount")) \
+        .limit(10) \
+        .collect()
     
-    print(top_10_users.show())
-
     # termino ejecucion de spark
     spark.get_spark().catalog.clearCache()
     spark.stop()
-    return []
+    return [(row.username, row.mentionCount) for row in top_10_users]
