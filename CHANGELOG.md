@@ -1,5 +1,39 @@
 # CHANGELOG
 
+## v0.2.0 (2024-07-04)
+
+### Feature
+
+* feat: add implementation for q3 memory ([`b54eb4a`](https://github.com/Sabmus/latam-de-challenge/commit/b54eb4aa9a6d75a99614c2dfe15b9aa2bf90b970))
+
+### Fix
+
+* fix: remove duplicates by id ([`9d1ceea`](https://github.com/Sabmus/latam-de-challenge/commit/9d1ceea57174e6acbfce310474bd800d58cdd37f))
+
+### Refactor
+
+* refactor: remove tags from on push actions ([`1d6495c`](https://github.com/Sabmus/latam-de-challenge/commit/1d6495cbf7e8ee3fa31dd5c0d1570c4490f62f51))
+
+* refactor: add common function to extract data from main dataset ([`3ddb6ea`](https://github.com/Sabmus/latam-de-challenge/commit/3ddb6ea48ad467fe51842950dc741a7dc71e990a))
+
+* refactor: add partial implementation for q3 time ([`92f4e71`](https://github.com/Sabmus/latam-de-challenge/commit/92f4e7175683bd77122d4fa9a002de71b3772002))
+
+* refactor: add partial implementation for q3_memory ([`1e41885`](https://github.com/Sabmus/latam-de-challenge/commit/1e418850fa41d4be89075caac7bb5554fb5b6a1d))
+
+### Unknown
+
+* Merge pull request #14 from Sabmus/release
+
+Release Q2 ([`874f0ec`](https://github.com/Sabmus/latam-de-challenge/commit/874f0ec84f4e4f372a7e5593d90e31e878848bdd))
+
+* Merge pull request #13 from Sabmus/feature/q3-time
+
+Feature/q3 time ([`b81478a`](https://github.com/Sabmus/latam-de-challenge/commit/b81478a13a9fc73996fa4fc783049955c5d6446b))
+
+* Merge pull request #12 from Sabmus/feature/q3-memory
+
+Feature/q3 memory ([`e13632c`](https://github.com/Sabmus/latam-de-challenge/commit/e13632cd95d922c3543ba00409dc59a708a7f906))
+
 ## v0.1.0 (2024-07-03)
 
 ### Chore
