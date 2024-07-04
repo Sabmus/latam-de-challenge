@@ -7,7 +7,7 @@ def q1_memo(json_data):
     return json_data.select("id", "date", sf.col("user.username").alias("username"))
 
 def q2_memo(json_data):
-    pass
+    return json_data.select("id", "content")
 
 def q3_memo(json_data):
     return json_data.select("id", "mentionedUsers")
@@ -29,6 +29,11 @@ def extract_details(df, quotedTweetLevel, option):
             sf.col(f"{quotedTweetLevel}.date").alias("date"),
             sf.col(f"{quotedTweetLevel}.user.username").alias("username")
         ).where(sf.col(f"{quotedTweetLevel}.id").isNotNull())
+    if option == "q2_memo":
+        return df.select(
+            sf.col(f"{quotedTweetLevel}.id").alias("id"),
+            sf.col(f"{quotedTweetLevel}.content").alias("content"),
+        ).where(sf.col(f"{quotedTweetLevel}.id").isNotNull()).where(sf.col(f"{quotedTweetLevel}.content").isNotNull())
     if option == "q3_memo":
         return df.select(
             sf.col(f"{quotedTweetLevel}.id").alias("id"),
