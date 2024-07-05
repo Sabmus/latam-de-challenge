@@ -2,21 +2,27 @@ from pyspark.sql import SparkSession
 from pyspark.conf import SparkConf
 
 master: str = "local[*]" # uses all cores
-max_cores: int = 2
-memory: str = "4g"
-max_partition_bytes: int = (100 * 1024 * 1024)
+spark_max_cores: int = 4
+executor_cores: int = 2
+executor_memory: str = "4g"
+driver_cores: int = 4
+driver_memory: str = "4g"
+max_partition_bytes: int = (38 * 1024 * 1024) // 4
+maxResultSize: str = "1g"
+memoryOverhead: str = "1g"
 
 class SparkClass:
-    def __init__(self, app_name: str, master: str = master, max_cores: int = max_cores, memory: str = memory, max_partition_bytes: int = max_partition_bytes):
+    def __init__(self, app_name: str, master: str = master, executor_cores: int = executor_cores, executor_memory: str = executor_memory, max_partition_bytes: int = max_partition_bytes):
         conf = SparkConf() \
             .setAppName(app_name) \
             .setMaster(master) \
-            .set("spark.executor.cores", max_cores) \
-            .set("spark.executor.memory", memory) \
-            .set("spark.driver.cores", max_cores) \
-            .set("spark.driver.memory", "6g") \
-            .set("spark.executor.memoryOverhead", "1g") \
-            .set("spark.driver.maxResultSize", "3g") \
+            .set("spark.cores.max", spark_max_cores) \
+            .set("spark.executor.cores", executor_cores) \
+            .set("spark.executor.memory", executor_memory) \
+            .set("spark.driver.cores", driver_cores) \
+            .set("spark.driver.memory", driver_memory) \
+            .set("spark.executor.memoryOverhead", memoryOverhead) \
+            .set("spark.driver.maxResultSize", maxResultSize) \
             .set("spark.sql.files.maxPartitionBytes", max_partition_bytes) \
             .set("spark.files.maxPartitionBytes", max_partition_bytes) \
             .set("spark.network.timeout", "240s") \
