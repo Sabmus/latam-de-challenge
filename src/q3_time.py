@@ -1,16 +1,17 @@
 from typing import List, Tuple
 from spark_class import SparkClass
 from pyspark.sql import functions as sf
-from helpers.de_nest import extract_all_tweets
 
 def q3_time(file_path: str) -> List[Tuple[str, int]]:
     # Inicializacion de Spark
-    spark = SparkClass("Q1: Memory")
+    spark = SparkClass("Q3: Time")
     # Carga de datos
-    json_data = spark.load_json(file_path)
-    df = extract_all_tweets(json_data, "all_quoted")
+    #json_data = spark.load_json(file_path)
+    #df = extract_all_tweets(json_data, "all_quoted")
+    df = spark.load_parquet(file_path).select("id", "mentionUser")
+
     # hago un explode de los mentionedUsers para abrir el array y luego tomo solo el nombre de usuario
-    df = df.select(sf.explode("mentionedUsers").alias("mentionedUsersExploded")).select("mentionedUsersExploded.username")
+    df = df.select(sf.explode("mentionUser").alias("username")).select("username")
 
     # obtengo las top 10 fechas con mas tweets
     top_10_users = df.groupBy("username") \
