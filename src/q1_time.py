@@ -3,7 +3,6 @@ from datetime import datetime
 from spark_class import SparkClass
 from pyspark.sql.types import DateType
 from pyspark.sql import functions as sf
-from helpers.de_nest import extract_all_tweets
 
 def q1_time(file_path: str) -> List[Tuple[datetime.date, str]]:
     # Inicializacion de Spark
@@ -11,7 +10,7 @@ def q1_time(file_path: str) -> List[Tuple[datetime.date, str]]:
     # Carga de datos
     #json_data = spark.load_json(file_path)
     #df = extract_all_tweets(json_data, "all_quoted")
-    df = spark.load_parquet(file_path)
+    df = spark.load_parquet(file_path).select("id", "username", "date")
 
     # obtengo las top 10 fechas con mas tweets
     top_10_dates = df.groupBy(df["date"].cast(DateType()).alias("date")) \

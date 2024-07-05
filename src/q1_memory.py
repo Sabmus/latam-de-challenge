@@ -4,7 +4,6 @@ from spark_class import SparkClass
 from memory_profiler import profile
 from pyspark.sql.types import DateType
 from pyspark.sql import functions as sf 
-from helpers.de_nest import extract_all_tweets
 
 @profile
 def q1_memory(file_path: str) -> List[Tuple[datetime.date, str]]:

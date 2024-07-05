@@ -1,9 +1,7 @@
 from typing import List, Tuple
 import emoji
 from spark_class import SparkClass
-from memory_profiler import profile
 from pyspark.sql import functions as sf
-from helpers.de_nest import extract_all_tweets
 import re
 
 def q2_time(file_path: str) -> List[Tuple[str, int]]:
