@@ -6,12 +6,10 @@ def q3_time(file_path: str) -> List[Tuple[str, int]]:
     # Inicializacion de Spark
     spark = SparkClass("Q3: Time")
     # Carga de datos
-    #json_data = spark.load_json(file_path)
-    #df = extract_all_tweets(json_data, "all_quoted")
     df = spark.load_parquet(file_path).select("id", "mentionUser")
 
     # hago un explode de los mentionedUsers para abrir el array y luego tomo solo el nombre de usuario
-    df = df.select(sf.explode("mentionUser").alias("username")).select("username")
+    df = df.select(sf.explode("mentionUser").alias("username")).select("username").cache()
 
     # obtengo las top 10 fechas con mas tweets
     top_10_users = df.groupBy("username") \
@@ -19,6 +17,8 @@ def q3_time(file_path: str) -> List[Tuple[str, int]]:
         .orderBy(sf.desc("mentionCount")) \
         .limit(10) \
         .collect()
+    
+    df.unpersist()
     
     # termino ejecucion de spark
     spark.get_spark().catalog.clearCache()

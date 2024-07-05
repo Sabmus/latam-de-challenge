@@ -8,8 +8,6 @@ def q3_memory(file_path: str) -> List[Tuple[str, int]]:
     # Inicializacion de Spark
     spark = SparkClass("Q3: Memory")
     # Carga de datos
-    #json_data = spark.load_json(file_path)
-    #df = extract_all_tweets(json_data, "q3_memo")
     df = spark.load_parquet(file_path).select("id", "mentionUser")
 
     # hago un explode de los mentionedUsers para abrir el array y luego tomo solo el nombre de usuario

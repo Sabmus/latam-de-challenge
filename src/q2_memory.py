@@ -11,9 +11,6 @@ def q2_memory(file_path: str) -> List[Tuple[str, int]]:
     spark = SparkClass("Q2: Memory")
 
     # Carga de datos
-    #json_data = spark.load_json(file_path).unpersist()
-    #df = extract_all_tweets(json_data, "q2_memo").unpersist()
-    #print(df.printSchema())
     df = spark.load_parquet(file_path).select("content").cache()
 
     emojis = sorted(emoji.EMOJI_DATA, key=len, reverse=True)

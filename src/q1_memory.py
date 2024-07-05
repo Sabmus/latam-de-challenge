@@ -10,8 +10,6 @@ def q1_memory(file_path: str) -> List[Tuple[datetime.date, str]]:
     # Inicializacion de Spark
     spark = SparkClass("Q1: Memory")
     # Carga de datos
-    #json_data = spark.load_json(file_path)
-    #df = extract_all_tweets(json_data, "q1_memo")
     df = spark.load_parquet(file_path).select("id", "username", "date")
 
     # obtengo las top 10 fechas con mas tweets

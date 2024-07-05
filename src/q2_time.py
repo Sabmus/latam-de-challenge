@@ -9,8 +9,6 @@ def q2_time(file_path: str) -> List[Tuple[str, int]]:
     spark = SparkClass("Q2: Time")
 
     # Carga de datos
-    #json_data = spark.load_json(file_path).unpersist()
-    #df = extract_all_tweets(json_data, "all_quoted").unpersist()
     df = spark.load_parquet(file_path).select("content").cache()
 
     emojis = sorted(emoji.EMOJI_DATA, key=len, reverse=True) 
