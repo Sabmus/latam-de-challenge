@@ -12,25 +12,32 @@ def q2_memory(file_path: str) -> List[Tuple[str, int]]:
     spark = SparkClass("Q2: Memory")
 
     # Carga de datos
-    json_data = spark.load_json(file_path).unpersist()
-    df = extract_all_tweets(json_data, "q2_memo").unpersist()
-    print(df.printSchema())
+    #json_data = spark.load_json(file_path).unpersist()
+    #df = extract_all_tweets(json_data, "q2_memo").unpersist()
+    #print(df.printSchema())
+    df = spark.load_parquet(file_path).select("content").cache()
 
     emojis = sorted(emoji.EMOJI_DATA, key=len, reverse=True)
     pattern = '(' + '|'.join(re.escape(u) for u in emojis) + ')'
 
     # Extract emojis using regexp_extract
-    df = df.withColumn("emojis", sf.regexp_extract_all(sf.col("content"), sf.lit(r""+pattern))).where(sf.size(sf.col("emojis")) > 0)
-    df = df.select(sf.explode("emojis").alias("emoji"))
+    df2 = df.withColumn("emojis", sf.regexp_extract_all(sf.col("content"), sf.lit(r""+pattern))) \
+        .where(sf.size(sf.col("emojis")) > 0) \
+        .drop("content") \
+        .cache()
 
-    top_10_emojis = df.groupBy("emoji") \
+    df.unpersist()
+    df3 = df2.select(sf.explode("emojis").alias("emoji")).cache()
+    df2.unpersist()
+
+    top_10_emojis = df3.groupBy("emoji") \
         .agg(sf.count("emoji").alias("emojiCount")) \
-        .orderBy(sf.desc("emojiCount")) \
-        .limit(10) \
-        .collect()
+        .orderBy(sf.desc("emojiCount")).cache()
     
+    result = top_10_emojis.take(10)
+    top_10_emojis.unpersist()
 
     # termino ejecucion de spark
     spark.get_spark().catalog.clearCache()
     spark.stop()
-    return [(row.emoji, row.emojiCount) for row in top_10_emojis]
+    return [(row.emoji, row.emojiCount) for row in result]
