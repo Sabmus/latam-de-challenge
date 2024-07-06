@@ -2,7 +2,6 @@ from typing import List, Tuple
 import pandas as pd
 from collections import Counter
 
-
 def q3_time(file_path: str) -> List[Tuple[str, int]]:
     # leo el archivo parquet usando la columna mentionUser
     df = pd.read_parquet(file_path, columns=['mentionUser'])
