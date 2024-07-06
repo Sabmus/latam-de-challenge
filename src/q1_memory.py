@@ -41,6 +41,5 @@ def q1_memory(file_path: str) -> List[Tuple[datetime.date, str]]:
     top_user_by_date.unpersist()
 
     # termino ejecucion de spark
-    spark.get_spark().catalog.clearCache()
-    spark.stop()
+    spark.stop_spark()
     return [(row.date, row.username) for row in result]

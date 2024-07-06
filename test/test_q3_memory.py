@@ -2,16 +2,16 @@ import sys
 import os
 sys.path.append('src')
 import unittest
-from src.q3_time import q3_time
+from src.q3_memory import q3_memory
 
 parquet_file = "tweets.parquet"
 data_folder_path = os.path.abspath(os.path.join(os.getcwd(), 'data'))
 parquet_path = f"{data_folder_path}\\{parquet_file}"
 
-class Test_Q3_Time(unittest.TestCase):
+class Test_Q3_Memory(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.result = q3_time(f"{parquet_path}")
+        cls.result = q3_memory(f"{parquet_path}")
     
     # test p
     def test_return_list(self):

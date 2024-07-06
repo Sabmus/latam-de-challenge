@@ -9,8 +9,9 @@ data_folder_path = os.path.abspath(os.path.join(os.getcwd(), 'data'))
 parquet_path = f"{data_folder_path}\\{parquet_file}"
 
 class Test_Q2_Time(unittest.TestCase):
-    def setUp(self):
-        self.result = q2_time(f"{parquet_path}")
+    @classmethod
+    def setUpClass(cls):
+        cls.result = q2_time(f"{parquet_path}")
     
     # test p
     def test_return_list(self):

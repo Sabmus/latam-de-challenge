@@ -55,6 +55,5 @@ def q2_memory(file_path: str) -> List[Tuple[str, int]]:
     df3.unpersist()
 
     # termino ejecucion de spark
-    spark.get_spark().catalog.clearCache()
-    spark.stop()
+    spark.stop_spark()
     return [(row.emoji, row.emojiCount) for row in top_10_emojis]

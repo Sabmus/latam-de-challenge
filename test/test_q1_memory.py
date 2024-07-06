@@ -2,18 +2,19 @@ import sys
 import os
 sys.path.append('src')
 import unittest
-from src.q3_time import q3_time
+from datetime import date
+from src.q1_memory import q1_memory
 
 parquet_file = "tweets.parquet"
 data_folder_path = os.path.abspath(os.path.join(os.getcwd(), 'data'))
 parquet_path = f"{data_folder_path}\\{parquet_file}"
 
-class Test_Q3_Time(unittest.TestCase):
+class Test_Q1_Memory(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.result = q3_time(f"{parquet_path}")
-    
-    # test p
+        cls.result = q1_memory(f"{parquet_path}")
+
+    # test para verificar si retorna una lista
     def test_return_list(self):
         self.assertIsInstance(self.result, list)
 
@@ -26,11 +27,11 @@ class Test_Q3_Time(unittest.TestCase):
         for row in self.result:
             self.assertIsInstance(row, tuple)
 
-    # test para verificar si retorna una lista de tuplas con un str y un int
-    def test_return_str_int_tuples(self):
+    # test para verificar si retorna una lista de tuplas con un date y un string
+    def test_return_datetime_str_tuples(self):
         for row in self.result:
-            self.assertIsInstance(row[0], str)
-            self.assertIsInstance(row[1], int)
+            self.assertIsInstance(row[0], date)
+            self.assertIsInstance(row[1], str)
 
     # test para verificar que no retorne vacio
     def test_return_not_empty(self):
@@ -40,26 +41,26 @@ class Test_Q3_Time(unittest.TestCase):
     def test_return_not_none(self):
         self.assertIsNotNone(self.result)
 
-    # test para verificar que no retorne string vacio
-    def test_return_not_empty_str(self):
+    # test para verificar que no retorne date vacio
+    def test_return_not_empty_date(self):
         for row in self.result:
             self.assertTrue(row[0])
 
-    # test para verificar que no retorne string None
-    def test_return_not_none_str(self):
+    # test para verificar que no retorne date None
+    def test_return_not_none_date(self):
         for row in self.result:
             self.assertIsNotNone(row[0])
 
-    # test para verificar que no retorne int negativo
-    def test_return_not_negative_int(self):
+    # test para verificar que no retorne string vacio
+    def test_return_not_empty_str(self):
         for row in self.result:
-            self.assertTrue(row[1] > 0)
+            self.assertTrue(row[1])
 
-    # test para verificar que no retorne int None
-    def test_return_not_none_int(self):
+    # test para verificar que no retorne string None
+    def test_return_not_none_str(self):
         for row in self.result:
             self.assertIsNotNone(row[1])
 
     
 if __name__ == "__main__":
-    unittest.main(verbosity=2)
+    unittest.main()

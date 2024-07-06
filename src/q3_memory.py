@@ -23,6 +23,5 @@ def q3_memory(file_path: str) -> List[Tuple[str, int]]:
     df.unpersist()
     
     # termino ejecucion de spark
-    spark.get_spark().catalog.clearCache()
-    spark.stop()
+    spark.stop_spark()
     return [(row.username, row.mentionCount) for row in top_10_users]

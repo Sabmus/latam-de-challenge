@@ -53,5 +53,6 @@ class SparkClass:
     def get_spark(self):
         return self.spark
 
-    def stop(self):
+    def stop_spark(self):
+        self.spark.catalog.clearCache()
         self.spark.stop()

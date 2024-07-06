@@ -10,10 +10,11 @@ data_folder_path = os.path.abspath(os.path.join(os.getcwd(), 'data'))
 parquet_path = f"{data_folder_path}\\{parquet_file}"
 
 class Test_Q1_Time(unittest.TestCase):
-    def setUp(self):
-        self.result = q1_time(f"{parquet_path}")
-    
-    # test p
+    @classmethod
+    def setUpClass(cls):
+        cls.result = q1_time(f"{parquet_path}")
+
+    # test para verificar si retorna una lista
     def test_return_list(self):
         self.assertIsInstance(self.result, list)
 
@@ -62,4 +63,4 @@ class Test_Q1_Time(unittest.TestCase):
 
     
 if __name__ == "__main__":
-    unittest.main(verbosity=2)
+    unittest.main()
