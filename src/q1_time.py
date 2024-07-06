@@ -1,36 +1,17 @@
 from typing import List, Tuple
 from datetime import datetime
-from spark_class import SparkClass
-from pyspark.sql.types import DateType
-from pyspark.sql import functions as sf
+import pandas as pd
 
 def q1_time(file_path: str) -> List[Tuple[datetime.date, str]]:
-    # Inicializacion de Spark
-    spark = SparkClass("Q1: Time")
-    # Carga de datos
-    df = spark.load_parquet(file_path).select("id", "username", "date").cache()
-
-    # obtengo las top 10 fechas con mas tweets
-    top_10_dates = df.groupBy(df["date"].cast(DateType()).alias("date")) \
-        .agg(sf.count("id").alias("tweetCount")) \
-        .orderBy(sf.desc("tweetCount")) \
-        .take(10)
+    df = pd.read_parquet(file_path, columns=['id', 'username', 'date'])
+    df['date_only'] = pd.to_datetime(df['date']).dt.date
     
-    # filtro el df principal con las top 10 fechas para luego agrupar según cantidad de tweets por usuario
-    top_user_by_date = df.filter(df.date.cast(DateType()).isin([row.date for row in top_10_dates.collect()])) \
-        .groupBy(df["date"].cast(DateType()).alias("date"), "username") \
-        .agg(sf.count("id").alias("tweetCount")).orderBy(sf.desc("tweetCount")) \
-        .take(10)
-    
-    df.unpersist()
-    # hago un join con ambos df para obtener el resultado final
-    result = top_10_dates.alias("top_10_dates") \
-            .join(top_user_by_date.alias("top_user_by_date"),top_10_dates.date == top_user_by_date.date, "inner") \
-            .select("top_10_dates.date", "top_user_by_date.username") \
-            .orderBy(sf.desc("top_10_dates.tweetCount")) \
-            .collect()
+    top_10_dates = df.groupby('date_only').size().nlargest(10).reset_index(name='tweetCount_date')
+    top_user_by_date = df[df['date_only'] \
+        .isin(top_10_dates['date_only'])] \
+        .groupby(['date_only', 'username']) \
+        .size().nlargest(10).reset_index(name='tweetCount_user')
 
-    # termino ejecucion de spark
-    spark.get_spark().catalog.clearCache()
-    spark.stop()
-    return [(row.date, row.username) for row in result]
+    result = top_10_dates.merge(top_user_by_date, on='date_only').sort_values('tweetCount_date', ascending=False)
+
+    return [(row.date_only, row.username) for row in result.itertuples()]
