@@ -41,4 +41,4 @@ def json_to_parquet(json_path, parquet_path):
     
     spark.save_as_parquet(df, f"{parquet_path}")
     print("Json to Parquet conversion completed successfully.")
-    spark.stop()
+    spark.stop_spark()
