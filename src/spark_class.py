@@ -1,6 +1,9 @@
 from pyspark.sql import SparkSession
 from pyspark.conf import SparkConf
 
+# CONFIG DOCS
+# https://spark.apache.org/docs/3.0.2/configuration.html
+
 master: str = "local[*]" # uses all cores
 spark_max_cores: int = 4
 executor_cores: int = 2
@@ -40,19 +43,27 @@ class SparkClass:
             
         self.spark = SparkSession.builder.config(conf=conf).getOrCreate()
     
+    # método para cargar un archivo json
     def load_json(self, file_path: str):
         return self.spark.read.json(file_path)
     
+    # método para guardian un archivo a parquet.
+    # lo hice de esta manera ya que de la forma: dr.write.parquet(file_path)
+    # me daba errores de conversión de tipos columnas
     def save_as_parquet(self, df, data_path: str):
         pandas_df = df.toPandas()
         pandas_df.to_parquet(data_path, compression='snappy')
 
+    # método para cargar un archivo parquet
     def load_parquet(self, file_path: str):
         return self.spark.read.parquet(file_path)
 
+    # método que retorna la instancia de spark
+    # también se podía usar simplemente: spark.spark, pero creo que se veía mal
     def get_spark(self):
         return self.spark
 
+    # método para detener la instancia de spark
     def stop_spark(self):
         self.spark.catalog.clearCache()
         self.spark.stop()
