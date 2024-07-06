@@ -10,8 +10,10 @@ def q1_memory(file_path: str) -> List[Tuple[datetime.date, str]]:
     # Inicializacion de Spark
     spark = SparkClass("Q1: Memory")
     # Carga de datos
-    df = spark.load_parquet(file_path).select("id", "username", "date").cache()
-    df = df.withColumn("date_only", sf.col("date").cast(DateType())).drop("date")
+    df = spark.load_parquet(file_path).select("id", "username", "date")
+    df = df.withColumn("date_only", sf.col("date").cast(DateType())) \
+        .repartition(4, "date_only") \
+        .drop("date").cache()
 
     # obtengo las top 10 fechas con mas tweets 
     top_10_dates = df.groupBy(df["date_only"].alias("date")) \
