@@ -8,7 +8,7 @@ def q3_memory(file_path: str) -> List[Tuple[str, int]]:
     # Inicializacion de Spark
     spark = SparkClass("Q3: Memory")
     # Carga de datos
-    df = spark.load_parquet(file_path).select("id", "mentionUser").cache()
+    df = spark.load_parquet(file_path).select("mentionUser").cache()
 
     # hago un explode de los mentionedUsers para abrir el array y luego tomo solo el nombre de usuario
     df = df.select(sf.explode("mentionUser").alias("username")).select("username")
