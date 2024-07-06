@@ -8,16 +8,19 @@ def q3_memory(file_path: str) -> List[Tuple[str, int]]:
     # Inicializacion de Spark
     spark = SparkClass("Q3: Memory")
     # Carga de datos
-    df = spark.load_parquet(file_path).select("id", "mentionUser")
+    df = spark.load_parquet(file_path).select("id", "mentionUser").cache()
 
     # hago un explode de los mentionedUsers para abrir el array y luego tomo solo el nombre de usuario
     df = df.select(sf.explode("mentionUser").alias("username")).select("username")
+
     # obtengo las top 10 fechas con mas tweets
     top_10_users = df.groupBy("username") \
         .agg(sf.count("username").alias("mentionCount")) \
         .orderBy(sf.desc("mentionCount")) \
-        .limit(10) \
-        .collect()
+        .take(10)
+    
+    # libero memoria de df
+    df.unpersist()
     
     # termino ejecucion de spark
     spark.get_spark().catalog.clearCache()
