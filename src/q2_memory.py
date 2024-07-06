@@ -11,7 +11,7 @@ def find_all_emojis(text: str) -> List[str]:
 @profile
 def q2_memory(file_path: str) -> List[Tuple[str, int]]:
     # Inicializacion de Spark
-    spark = SparkClass("Q2: Time")
+    spark = SparkClass("Q2: Memory")
     # Carga de datos
     df = spark.load_parquet(file_path).select("content").where(sf.col("content").isNotNull()).cache()
     
